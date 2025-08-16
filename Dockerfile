@@ -2,11 +2,16 @@ FROM eclipse-temurin:21-jdk-jammy
 
 WORKDIR /app
 
-# Copiar el JAR ya generado
-COPY target/reservas-0.0.1-SNAPSHOT.jar app.jar
 
-# Exponer puerto
+COPY pom.xml .
+COPY src ./src
+
+
+RUN apt-get update && apt-get install -y maven
+RUN mvn clean package -DskipTests
+
+
 EXPOSE 8080
 
-# Ejecutar la app
-ENTRYPOINT ["java","-jar","app.jar"]
+
+ENTRYPOINT ["java","-jar","target/reservas-0.0.1-SNAPSHOT.jar"]
