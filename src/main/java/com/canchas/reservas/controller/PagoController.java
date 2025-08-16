@@ -55,7 +55,7 @@ public class PagoController {
         try {
             String linkPago = mercadoPagoService.crearPreferencia(
                     "Reserva Cancha #" + reserva.getId(),
-                    24,
+                    1,
                     reserva.getMontoTotal(),
                     backUrl,
                     reserva.getId()  // Enviamos reservaId en external_reference

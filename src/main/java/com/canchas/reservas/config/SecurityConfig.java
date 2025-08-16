@@ -43,9 +43,11 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/usuarios/registrar").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/api/usuario/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/usuarios/verificar").permitAll() // 👉 público
+                        .requestMatchers("/api/usuarios/validarCorreo").permitAll()
+                        .requestMatchers("/api/usuarios/**").hasRole("admin")
+                        .requestMatchers("/api/admin/**").hasRole("admin")
 
                         .anyRequest().authenticated()
                 )
