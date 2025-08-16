@@ -10,10 +10,8 @@ COPY src ./src
 RUN apt-get update && apt-get install -y maven
 RUN mvn clean package -DskipTests
 
-# Copiar el JAR generado
-COPY target/reservas-0.0.1-SNAPSHOT.jar app.jar
-
+# Exponer puerto
 EXPOSE 8080
 
-# EntryPoint con variable de entorno que ya vendrá de Railway
-ENTRYPOINT ["java","-jar","app.jar"]
+# Ejecutar la app directamente desde el JAR generado
+ENTRYPOINT ["java","-jar","target/reservas-0.0.1-SNAPSHOT.jar"]
