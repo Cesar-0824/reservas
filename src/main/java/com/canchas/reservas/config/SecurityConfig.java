@@ -1,18 +1,13 @@
 package com.canchas.reservas.config;
 
-import com.canchas.reservas.repository.UsuarioRepository;
 import com.canchas.reservas.security.JwtFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,7 +29,7 @@ public class SecurityConfig {
 
     public SecurityConfig(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
-    }   
+    }
 
     // Filtro de seguridad principal
     @Bean
@@ -46,18 +41,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/usuarios/registrar").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/api/usuarios/verificar").permitAll() // 👉 público
+                        .requestMatchers("/api/usuarios/verificar").permitAll()
                         .requestMatchers("/api/usuarios/validarCorreo").permitAll()
                         .requestMatchers("/api/usuarios/**").hasRole("admin")
                         .requestMatchers("/api/admin/**").hasRole("admin")
-
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("/api/auth/oauth-success", true)
-                )
+                // ⚡ OAuth2 eliminado
                 .httpBasic(withDefaults()) // ✅ Basic Auth habilitado
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // ✅ JWT
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exc -> exc
                         .authenticationEntryPoint((req, res, ex) -> {
                             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -68,25 +60,20 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-    // Para autenticación en login manual y Basic Auth
-
-
     // Codificador de contraseñas
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // AuthenticationManager para login manual (JWT)
-
-
     // Configuración CORS para permitir acceso desde el frontend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000",
-                "https://reservas-front.web.app"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://reservas-front.web.app"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
